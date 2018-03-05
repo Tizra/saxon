@@ -102,16 +102,6 @@
       proc))
   ([k v & {:as config}]
     (processor (assoc config k v ))))
-    
-(defmulti set-xml-catalog! (fn [catalog is-tracing] (class catalog)))
-  (defmethod set-xml-catalog! File
-    [catalog is-tracing]
-    (set-xml-catalog! (str catalog) is-tracing))
-  (defmethod set-xml-catalog! String
-    [catalog is-tracing]
-    (. net.sf.saxon.trans.XmlCatalogResolver
-       (setCatalog catalog (.getUnderlyingConfiguration proc) is-tracing)))
-
 
 (defmulti ^Source xml-source class)
   (defmethod xml-source File

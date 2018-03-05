@@ -1,4 +1,4 @@
-(defproject com.github.tizra/clojure-saxon "0.11.0-Tizra-3"
+(defproject com.github.tizra/clojure-saxon "0.11.0-Tizra-4"
   :description "Clojure wrapper for the Saxon XSLT and XQuery processor."
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [net.sf.saxon/Saxon-HE "9.7.0-4"]
