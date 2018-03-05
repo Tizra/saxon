@@ -57,7 +57,6 @@
     (.setAllowOasisXMLCatalogPI (or (:allow-oasis-xml-catalog-pi options) false))
     (.setVerbosity (or (:verbosity options) 0))
     (.setRelativeCatalogs (or (:relative-catalogs options) false))
-    
     (.setUseStaticCatalog (or (:use-static-catalog options) false))))
 
 (defn ^CatalogResolver
@@ -66,9 +65,6 @@
   (if (nil? arg)
     (CatalogResolver.)
   (CatalogResolver. (catalog-manager arg))))
-
-
-
 
 (defn- java-prop-name
   [prop]
@@ -136,7 +132,6 @@
   (defmethod xml-source XdmNode
     [nd]
     (.asSource ^XdmNode nd))
-
 
 ;; Well, except this is public -- maybe doesn't need to be
 (defn atomic?
