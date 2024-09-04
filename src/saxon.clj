@@ -261,27 +261,27 @@
 (defmulti serialize (fn [^Processor proc node dest & props] (class dest)))
   (defmethod serialize File
     [^Processor proc node ^File dest & props]
-    (let [s (Serializer.)]
+    (let [s (.newSerializer proc dest)]
       (set-props s (first props))
-      (write-value proc node (doto s (.setOutputFile dest)))
+      (write-value proc node s)
       dest))
   (defmethod serialize OutputStream
     [^Processor proc node ^OutputStream dest & props]
-    (let [s (Serializer.)]
+    (let [s (.newSerializer proc dest)]
       (set-props s (first props))
-      (write-value proc node (doto s (.setOutputStream dest)))
+      (write-value proc node s)
       dest))
   (defmethod serialize Writer
     [^Processor proc node ^Writer dest & props]
-    (let [s (Serializer.)]
+    (let [s (.newSerializer proc dest)]
       (set-props s (first props))
-      (write-value proc node (doto s (.setOutputWriter dest)))
+      (write-value proc node s)
       dest))
 
 (defn serializer
   ([^Processor proc]
     (-> proc .newSerializer))
-  ([^Processor proc ^Destination dest]
+  ([^Processor proc dest]
     (-> proc (.newSerializer dest))))
 ;; Node functions
 
