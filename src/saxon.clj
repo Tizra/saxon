@@ -1,9 +1,9 @@
 ; Copyright © March 2009, Perry Trolard, Washington University in Saint Louis
-; 
-; The use and distribution terms for this software are covered by the MIT 
-; Licence (http://opensource.org/licenses/mit-license.php), which can be found 
-; in the file MIT.txt at the root of this distribution. Use of the software 
-; counts as agreeing to be bound by the terms of this license. You must not 
+;
+; The use and distribution terms for this software are covered by the MIT
+; Licence (http://opensource.org/licenses/mit-license.php), which can be found
+; in the file MIT.txt at the root of this distribution. Use of the software
+; counts as agreeing to be bound by the terms of this license. You must not
 ; remove this notice from this software.
 
 (ns saxon
@@ -33,7 +33,7 @@
 ;;
 (def ^CatalogManager
      allocate-catalog-manager
-  ;(memoize 
+  ;(memoize
     (fn [arg]
         (cond
           (string? arg)
@@ -49,7 +49,7 @@
           arg
           :default (throw (Exception. (str "bad manager passed for catalog-resolver" arg))))));)
 
-(defn ^CatalogManager 
+(defn ^CatalogManager
       catalog-manager
   [options]
   (doto (allocate-catalog-manager options)
@@ -81,16 +81,16 @@
     (-> proc
       .getUnderlyingConfiguration
       .getParseOptions
-      (.setEntityResolver 
+      (.setEntityResolver
         (catalog-resolver value)))
 
     (let [prop  (java-prop-name prop)
          ^String field (.get (.getField FeatureKeys prop) nil)]
      (.setConfigurationProperty proc field value))))
 
-(defn ^Processor 
+(defn ^Processor
   processor
-  "Returns a Saxon Processor object, a thread-safe generator class for documents, 
+  "Returns a Saxon Processor object, a thread-safe generator class for documents,
   stylesheets, & XPaths."
   ([]
     (Processor. false))
@@ -130,11 +130,11 @@
   (.isAtomicValue val))
 
 (defn unwrap-xdm-items
-  "Makes XdmItems Clojure-friendly. A Saxon XdmItem is either an atomic value 
-  (number, string, URI) or a node. 
-  
-  This function returns a sequence of items, turning XdmAtomicValues 
-  into their corresponding Java datatypes (Strings, the numeric types), leaving XdmNodes 
+  "Makes XdmItems Clojure-friendly. A Saxon XdmItem is either an atomic value
+  (number, string, URI) or a node.
+
+  This function returns a sequence of items, turning XdmAtomicValues
+  into their corresponding Java datatypes (Strings, the numeric types), leaving XdmNodes
   as nodes."
   [sel]
   (map #(if (atomic? %) (.getValue #^XdmAtomicValue %) %) sel))
@@ -144,17 +144,17 @@
 ;;
 
 (defn ^XdmNode
-	compile-xml
-  "Compiles XML into an XdmNode, the Saxon 
+    compile-xml
+  "Compiles XML into an XdmNode, the Saxon
   currency for in-memory tree representation. Takes
-  File, URL, InputStream, Reader, or String." 
+  File, URL, InputStream, Reader, or String."
   [^Processor proc x]
-  (.. proc (newDocumentBuilder) 
+  (.. proc (newDocumentBuilder)
                   (build (xml-source x))))
 
 (defn compile-xslt
   "Compiles stylesheet (from anything convertible to javax.
-  xml.transform.Source), returns function that applies it to 
+  xml.transform.Source), returns function that applies it to
   compiled doc or node."
   [^Processor proc f]
   (let    [cmplr  (.newXsltCompiler proc)
@@ -183,33 +183,33 @@
 
 (defn compile-xpath
   "Compiles XPath expression (given as string), returns
-  function that applies it to compiled doc or node. Takes 
+  function that applies it to compiled doc or node. Takes
   optional map of prefixes (as keywords) and namespace URIs."
   [^Processor proc ^String xpath & ns-map]
-  (let  [cmplr  (doto (.newXPathCompiler proc) 
+  (let  [cmplr  (doto (.newXPathCompiler proc)
                     (#(doseq [[pre uri] (first ns-map)]
                         (.declareNamespace ^XPathCompiler % (name pre) uri))))
          exe    (.compile cmplr xpath)]
 
-    (fn [^XdmNode xml] 
+    (fn [^XdmNode xml]
       (unwrap-xdm-items
         (doto (.load exe)
           (.setContextItem xml))))))
 
 (defn compile-xquery
   "Compiles XQuery expression (given as string), returns
-  function that applies it to compiled doc or node. Takes 
+  function that applies it to compiled doc or node. Takes
   optional map of prefixes (as keywords) and namespace URIs."
   [^Processor proc ^String xquery & ns-map]
-  (let  [cmplr  (doto (.newXQueryCompiler proc) 
+  (let  [cmplr  (doto (.newXQueryCompiler proc)
                     (#(doseq [[pre uri] (first ns-map)]
                         (.declareNamespace ^XQueryCompiler % (name pre) uri))))
          exe    (.compile cmplr xquery)]
 
-    (fn [^XdmNode xml] 
+    (fn [^XdmNode xml]
       ; TODO add variable support
       ;(.setExternalVariable ^Qname name ^XdmValue val)
-      (unwrap-xdm-items 
+      (unwrap-xdm-items
         (doto (.load exe)
           (.setContextItem xml))))))
 
@@ -302,7 +302,7 @@
       (.getNamespaceURI ^QName q)
       (node-ns (node-name q))))
 
-(def ^:private 
+(def ^:private
   node-kind-map
       {XdmNodeKind/DOCUMENT   :document
        XdmNodeKind/ELEMENT    :element
@@ -327,20 +327,20 @@
   [^String attr ^XdmNode el]
   (.getAttributeValue el (QName. attr)))
 
-;(def ^{:private true} 
+;(def ^{:private true}
 ;    axis-map
-;        {:ancestor            Axis/ANCESTOR           
-;         :ancestor-or-self    Axis/ANCESTOR_OR_SELF   
-;         :attribute           Axis/ATTRIBUTE          
-;         :child               Axis/CHILD              
-;         :descendant          Axis/DESCENDANT         
-;         :descendant-or-self  Axis/DESCENDANT_OR_SELF 
-;         :following           Axis/FOLLOWING          
-;         :following-sibling   Axis/FOLLOWING_SIBLING  
-;         :parent              Axis/PARENT             
-;         :preceding           Axis/PRECEDING          
-;         :preceding-sibling   Axis/PRECEDING_SIBLING  
-;         :self                Axis/SELF               
+;        {:ancestor            Axis/ANCESTOR
+;         :ancestor-or-self    Axis/ANCESTOR_OR_SELF
+;         :attribute           Axis/ATTRIBUTE
+;         :child               Axis/CHILD
+;         :descendant          Axis/DESCENDANT
+;         :descendant-or-self  Axis/DESCENDANT_OR_SELF
+;         :following           Axis/FOLLOWING
+;         :following-sibling   Axis/FOLLOWING_SIBLING
+;         :parent              Axis/PARENT
+;         :preceding           Axis/PRECEDING
+;         :preceding-sibling   Axis/PRECEDING_SIBLING
+;         :self                Axis/SELF
 ;         :namespace           Axis/NAMESPACE})
 ;
 ;(defn axis-seq
@@ -376,7 +376,7 @@
   "Returns true if node is comment."
   [^XdmNode nd]
   (.equals (.getNodeKind nd) XdmNodeKind/COMMENT))
-  
+
 (defn namespace?
   "Returns true if node is namespace."
   [^XdmNode nd]
